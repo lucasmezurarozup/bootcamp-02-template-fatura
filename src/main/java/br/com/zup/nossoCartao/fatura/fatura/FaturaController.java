@@ -30,13 +30,12 @@ public class FaturaController {
 
     private IntervaloTransacoesFatura intervaloTransacoesFatura;
 
-
     @GetMapping("/cartao/{id}")
     public ResponseEntity<?> consultaFaturaCartao(@PathVariable("id") String numeroCartao) {
 
         if(transacaoRepository.findByCartaoId(numeroCartao).isPresent()) {
 
-            intervaloTransacoesFatura = new IntervaloTransacoesFatura(1);
+            intervaloTransacoesFatura = new IntervaloTransacoesFatura();
 
             List<Transacao> transacaoList = transacaoRepository
                     .findByCartaoIdAndEfetivadaEmBetween(

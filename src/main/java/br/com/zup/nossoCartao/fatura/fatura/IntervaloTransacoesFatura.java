@@ -9,11 +9,11 @@ public class IntervaloTransacoesFatura {
     private LocalDateTime dataInicial;
     private LocalDateTime dataFinal;
 
-    public IntervaloTransacoesFatura(int diaFechamentoFatura) {
-        this.criaIntervaloParaContabilizarFatura(diaFechamentoFatura);
+    public IntervaloTransacoesFatura() {
+        this.criaIntervaloParaContabilizarFatura();
     }
 
-    public void criaIntervaloParaContabilizarFatura(int diaFechamentoFatura) {
+    public void criaIntervaloParaContabilizarFatura() {
         LocalDate dataHoje = LocalDate.now();
         int anoAtual = dataHoje.getYear();
         int mesAtual = dataHoje.getMonthValue();
