@@ -1,0 +1,16 @@
+server:
+  port: 8095
+spring:
+  application:
+    name: "CartaoCreditoFatura"
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5450/fatura}
+    username: ${DATABASE_USERNAME:keycloak}
+    password: ${DATABASE_URL:password}
+    jpa:
+      showSql: false
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQL9Dialect
+      hibernate:
+        ddlAuto: create-drop
