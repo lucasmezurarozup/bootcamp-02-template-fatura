@@ -25,41 +25,35 @@ public class FaturaController {
 
     @Autowired
     private TransacaoRepository transacaoRepository;
+
     private List<LocalDateTime> datas = new ArrayList<>();
+
+    private IntervaloTransacoesFatura intervaloTransacoesFatura;
+
 
     @GetMapping("/cartao/{id}")
     public ResponseEntity<?> consultaFaturaCartao(@PathVariable("id") String numeroCartao) {
 
-        List<LocalDateTime> intervalo = intervaloConsulta();
-
         if(transacaoRepository.findByCartaoId(numeroCartao).isPresent()) {
+
+            intervaloTransacoesFatura = new IntervaloTransacoesFatura(1);
+
             List<Transacao> transacaoList = transacaoRepository
-                    .findByCartaoIdAndEfetivadaEmBetween(numeroCartao, intervalo.get(0), intervalo.get(1));
+                    .findByCartaoIdAndEfetivadaEmBetween(
+                            numeroCartao,
+                            intervaloTransacoesFatura.getDataInicial(),
+                            intervaloTransacoesFatura.getDataFinal());
 
             FaturaResponse faturaResponse = new FaturaResponse(numeroCartao, transacaoList);
 
             return ResponseEntity.ok(faturaResponse);
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O cartão não foi localizado!");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "O cartão não foi localizado!"
+            );
         }
     }
 
-    public List<LocalDateTime> intervaloConsulta() {
 
-        List<LocalDateTime> datas = new ArrayList<>();
-
-        LocalDate dataHoje = LocalDate.now();
-        int anoAtual = dataHoje.getYear();
-        int mesAtual = dataHoje.getMonthValue();
-        LocalDate dataInicial = LocalDate.of(anoAtual, mesAtual, 1);
-        LocalDate dataFinal = dataInicial.withDayOfMonth(dataInicial.lengthOfMonth());
-
-        LocalDateTime dataInicialTime = LocalDateTime.of(dataInicial, LocalTime.of(0, 0, 0));
-        LocalDateTime dataFinalTime = LocalDateTime.of(dataFinal, LocalTime.of(23, 59, 59));
-
-        datas.add(dataInicialTime);
-        datas.add(dataFinalTime);
-
-        return datas;
-    }
  }
