@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface TransacaoRepository extends CrudRepository<Transacao, Long> {
     List<Transacao> findTop10ByCartaoId(String numeroCartao);
 
-    List<Transacao> findByCartaoIdAndEfetivadaEmBetween(String numeroCartao, LocalDateTime efetivadaEmInicio, LocalDateTime efetivadaEmFinal);
+    List<Transacao> findByCartaoIdAndEfetivadaEmBetweenOrderByEfetivadaEmDesc(String numeroCartao, LocalDateTime efetivadaEmInicio, LocalDateTime efetivadaEmFinal);
 
     Optional<List<Transacao>> findByCartaoId(String cartaoId);
 }

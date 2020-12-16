@@ -1,5 +1,7 @@
 package br.com.zup.nossoCartao.fatura.fatura;
 
+import br.com.zup.nossoCartao.fatura.compartilhado.cartaoclient.CartaoClient;
+import br.com.zup.nossoCartao.fatura.compartilhado.cartaoclient.ResultadoConsultaCartaoResponse;
 import br.com.zup.nossoCartao.fatura.transacao.Transacao;
 import br.com.zup.nossoCartao.fatura.transacao.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,9 @@ public class FaturaController {
 
     @Autowired
     private TransacaoRepository transacaoRepository;
+
+    @Autowired
+    private CartaoClient cartaoClient;
 
     private List<LocalDateTime> datas = new ArrayList<>();
 
@@ -38,12 +42,18 @@ public class FaturaController {
             intervaloTransacoesFatura = new IntervaloTransacoesFatura();
 
             List<Transacao> transacaoList = transacaoRepository
-                    .findByCartaoIdAndEfetivadaEmBetween(
+                    .findByCartaoIdAndEfetivadaEmBetweenOrderByEfetivadaEmDesc(
                             numeroCartao,
                             intervaloTransacoesFatura.getDataInicial(),
                             intervaloTransacoesFatura.getDataFinal());
 
-            FaturaResponse faturaResponse = new FaturaResponse(numeroCartao, transacaoList);
+            ResultadoConsultaCartaoResponse cartaoResponse = cartaoClient.informacoesCartao(numeroCartao);
+
+            FaturaResponse faturaResponse = new FaturaResponse(
+                    numeroCartao,
+                    transacaoList,
+                    cartaoResponse.getLimite()
+            );
 
             return ResponseEntity.ok(faturaResponse);
         }else {

@@ -8,12 +8,17 @@ import java.util.List;
 public class FaturaResponse {
     String numero;
     BigDecimal total;
+    BigDecimal limiteDisponivel;
+    BigDecimal limite;
+
     List<Transacao> transacoes;
 
-    public FaturaResponse(String numero, List<Transacao> transacoes) {
+    public FaturaResponse(String numero, List<Transacao> transacoes, BigDecimal limite) {
         this.numero = numero;
         this.transacoes = transacoes;
         this.total = calculaTotal();
+        this.limite = limite;
+        this.limiteDisponivel = this.limite.subtract(total);
     }
 
     public String getNumero() {
@@ -31,6 +36,16 @@ public class FaturaResponse {
     }
 
     public List<Transacao> getTransacoes() {
-        return transacoes;
+        return this.transacoes.size() > 10 ?
+                this.transacoes.subList(0, 10) :
+                this.transacoes;
+    }
+
+    public BigDecimal getLimiteDisponivel() {
+        return limiteDisponivel;
+    }
+
+    public BigDecimal getLimite() {
+        return limite;
     }
 }
