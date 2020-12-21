@@ -11,9 +11,9 @@ public class FaturaResponse {
     BigDecimal limiteDisponivel;
     BigDecimal limite;
 
-    List<Transacao> transacoes;
+    List<UltimaTransacao> transacoes;
 
-    public FaturaResponse(String numero, List<Transacao> transacoes, BigDecimal limite) {
+    public FaturaResponse(String numero, List<UltimaTransacao> transacoes, BigDecimal limite) {
         this.numero = numero;
         this.transacoes = transacoes;
         this.total = calculaTotal();
@@ -27,7 +27,7 @@ public class FaturaResponse {
 
     public BigDecimal calculaTotal() {
         return this.transacoes.stream()
-                .map(Transacao::getValor)
+                .map(UltimaTransacao::getValor)
                 .reduce((total, atual) -> total.add(atual)).orElse(BigDecimal.ZERO);
     }
 
@@ -35,7 +35,7 @@ public class FaturaResponse {
         return total;
     }
 
-    public List<Transacao> getTransacoes() {
+    public List<UltimaTransacao> getTransacoes() {
         return this.transacoes.size() > 10 ?
                 this.transacoes.subList(0, 10) :
                 this.transacoes;

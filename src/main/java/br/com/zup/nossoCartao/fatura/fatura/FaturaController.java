@@ -28,18 +28,17 @@ public class FaturaController {
     private TransacaoRepository transacaoRepository;
 
     @Autowired
-    private CartaoClient cartaoClient;
+    private FaturaRepository faturaRepository;
 
-    private List<LocalDateTime> datas = new ArrayList<>();
-
-    private IntervaloTransacoesFatura intervaloTransacoesFatura;
+    @Autowired
+    private FaturaFakeRepository faturaFakeRepository;
 
     @GetMapping("/cartao/{id}")
     public ResponseEntity<?> consultaFaturaCartao(@PathVariable("id") String numeroCartao) {
 
         if(transacaoRepository.findByCartaoId(numeroCartao).isPresent()) {
 
-            intervaloTransacoesFatura = new IntervaloTransacoesFatura();
+            /*intervaloTransacoesFatura = new IntervaloTransacoesFatura();
 
             List<Transacao> transacaoList = transacaoRepository
                     .findByCartaoIdAndEfetivadaEmBetweenOrderByEfetivadaEmDesc(
@@ -48,14 +47,31 @@ public class FaturaController {
                             intervaloTransacoesFatura.getDataFinal());
 
             ResultadoConsultaCartaoResponse cartaoResponse = cartaoClient.informacoesCartao(numeroCartao);
+*/
+            Fatura fatura = faturaRepository.findByCartaoId(numeroCartao);
 
-            FaturaResponse faturaResponse = new FaturaResponse(
-                    numeroCartao,
-                    transacaoList,
-                    cartaoResponse.getLimite()
-            );
+           FaturaFake faturaFake = faturaFakeRepository.findByCartaoId(numeroCartao);
 
-            return ResponseEntity.ok(faturaResponse);
+          if (faturaFake != null) {
+              /*FaturaResponse faturaResponse = new FaturaResponse(
+                      numeroCartao,
+                      null,
+                      faturaFake.getLimite()
+              );*/
+
+              FaturaFakeResponse faturaResponse = new FaturaFakeResponse(
+                  numeroCartao,
+                  faturaFake.getSaldo(),
+                  faturaFake.getLimite()
+              );
+
+              return ResponseEntity.ok(faturaResponse);
+          }else {
+              throw new ResponseStatusException(
+                      HttpStatus.NOT_FOUND,
+                      "O não há fatura formulada!"
+              );
+          }
         }else {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
